@@ -48,10 +48,6 @@ export default function Home() {
     setCart([...cart, p]);
   };
 
-  const addToCart = (p) => {
-    setCart([...cart, p]);
-  };
-
   const totalAmount = () => {
     let total = cart.reduce((sum, item) => sum + Number(item.price), 0);
     if (cart.length < 3 && total < 1500) {
