@@ -14,19 +14,38 @@
 
 // Replace app/page.js with below:
 
+
 'use client';
 import { useState } from 'react';
+
+type Product = {
+  id: number;
+  name: string;
+  price: string;
+  category: string;
+  image: string;
+};
 
 const categories = ['Kurtis', 'UGs', 'Jewellery', 'Hair Accessories'];
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [form, setForm] = useState({ name: '', price: '', category: '', image: '' });
+  const [products, setProducts] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Product[]>([]);
+  
+  const [form, setForm] = useState<Omit<Product, 'id'>>({
+    name: 'zari',
+    price: '700',
+    category: 'premium',
+    image: ''
+  });
 
   const addProduct = () => {
     setProducts([...products, { ...form, id: Date.now() }]);
-    setForm({ name: '', price: '', category: '', image: '' });
+    setForm({ name: 'cotton', price: '600', category: 'cotton', image: '' });
+  };
+
+  const addToCart = (p: Product) => {
+    setCart([...cart, p]);
   };
 
   const addToCart = (p) => {
