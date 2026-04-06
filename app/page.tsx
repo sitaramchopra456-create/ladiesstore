@@ -1,65 +1,100 @@
-import Image from "next/image";
+// Next.js (App Router) E-commerce Template for Ladies Fashion Store
+// Features:
+// - Categories: Kurtis, UGs, Artificial Jewellery, Hair Accessories
+// - Admin upload panel (simple local state demo; can connect DB later)
+// - Product listing with price + ₹100 delivery auto-added
+// - Free delivery for 3+ items OR order >= ₹1500
+// - Payment page with Paytm QR upload
+
+// 1. Install:
+// npx create-next-app@latest ladies-store
+// cd ladies-store
+// npm install
+// npm run dev
+
+// Replace app/page.js with below:
+
+'use client';
+import { useState } from 'react';
+
+const categories = ['Kurtis', 'UGs', 'Jewellery', 'Hair Accessories'];
 
 export default function Home() {
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [form, setForm] = useState({ name: '', price: '', category: '', image: '' });
+
+  const addProduct = () => {
+    setProducts([...products, { ...form, id: Date.now() }]);
+    setForm({ name: '', price: '', category: '', image: '' });
+  };
+
+  const addToCart = (p) => {
+    setCart([...cart, p]);
+  };
+
+  const totalAmount = () => {
+    let total = cart.reduce((sum, item) => sum + Number(item.price), 0);
+    if (cart.length < 3 && total < 1500) {
+      total += 100;
+    }
+    return total;
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Ladies Fashion Store</h1>
+
+      {/* Admin Panel */}
+      <div className="border p-4 mb-6">
+        <h2 className="font-bold">Admin Upload</h2>
+        <input placeholder="Name" value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} className="border m-1"/>
+        <input placeholder="Price" value={form.price} onChange={(e)=>setForm({...form,price:e.target.value})} className="border m-1"/>
+        <input placeholder="Image URL" value={form.image} onChange={(e)=>setForm({...form,image:e.target.value})} className="border m-1"/>
+        <select value={form.category} onChange={(e)=>setForm({...form,category:e.target.value})} className="border m-1">
+          <option>Select Category</option>
+          {categories.map(c => <option key={c}>{c}</option>)}
+        </select>
+        <button onClick={addProduct} className="bg-blue-500 text-white p-2 m-1">Add Product</button>
+      </div>
+
+      {/* Product Listing */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {products.map(p => (
+          <div key={p.id} className="border p-2">
+            <img src={p.image} className="h-40 w-full object-cover" />
+            <h3>{p.name}</h3>
+            <p>₹{p.price} + ₹100 delivery</p>
+            <button onClick={()=>addToCart(p)} className="bg-green-500 text-white p-1 mt-2">Buy</button>
+          </div>
+        ))}
+      </div>
+
+      {/* Cart */}
+      <div className="mt-6">
+        <h2 className="font-bold">Cart ({cart.length})</h2>
+        <p>Total: ₹{totalAmount()}</p>
+        <a href="/payment" className="bg-black text-white p-2 inline-block mt-2">Go to Payment</a>
+      </div>
     </div>
   );
 }
+
+// 2. Create app/payment/page.js
+
+export function Payment() {
+  return (
+    <div className="p-6">
+      <h1 className="text-xl font-bold">Payment Page</h1>
+      <p>Scan Paytm QR to Pay</p>
+      <img src="/paytm-qr.png" className="w-64" />
+    </div>
+  );
+}
+
+// Notes:
+// - Upload your Paytm QR as /public/paytm-qr.png
+// - For 500 images, use cloud (Cloudinary/Firebase) instead of manual URL
+// - For real admin login, connect Firebase/Auth
+// - Deploy using Vercel: vercel.com → import project
+
