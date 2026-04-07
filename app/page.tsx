@@ -1,6 +1,6 @@
 // FULL STACK (Frontend + Firebase Integration in one file for demo)
 // You will later split into files in real project
-
+'use client';
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import {
