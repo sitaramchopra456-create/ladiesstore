@@ -2,6 +2,7 @@
 // You will later split into files in real project
 'use client';
 
+import { User } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import {
@@ -32,7 +33,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [adminMode, setAdminMode] = useState(false);
