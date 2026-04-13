@@ -1,5 +1,6 @@
 // FULL STACK (Frontend + Firebase Integration in one file for demo)
 // You will later split into files in real project
+'use client';
 
 type Product = {
   id: string;
@@ -8,7 +9,6 @@ type Product = {
   category: string;
   image: string;
 };
-'use client';
 import { User } from "firebase/auth"
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
