@@ -1,8 +1,6 @@
 // FULL STACK (Frontend + Firebase Integration in one file for demo)
 // You will later split into files in real project
-'use client';
 
-import { User } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import {
@@ -33,7 +31,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [adminMode, setAdminMode] = useState(false);
@@ -179,3 +177,19 @@ function AdminPanel({ addProduct }) {
     </div>
   );
 }
+
+/*
+SETUP STEPS:
+1. Go to Firebase Console
+2. Create Project
+3. Enable Authentication → Google
+4. Enable Firestore DB
+5. Paste config above
+6. Deploy to Vercel
+
+NOW YOU HAVE:
+- Google Login ✅
+- Secure auth ✅
+- User-based cart ✅
+- Admin upload panel ✅
+*/
