@@ -81,7 +81,7 @@ setProducts(
   };
 
   // 🛒 CART
-  const addToCart = async (product) => {
+  const addToCart = async (product: Product) => {
     if (!user) return alert("Login first");
     await addDoc(collection(db, "cart"), {
       uid: user.uid,
