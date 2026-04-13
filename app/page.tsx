@@ -75,7 +75,7 @@ setProducts(
 );
   };
 
-  const addProduct = async (p) => {
+  const addProduct = async (p: Omit<Product, "id">) => {
     await addDoc(collection(db, "products"), p);
     loadProducts();
   };
