@@ -1,6 +1,13 @@
 // FULL STACK (Frontend + Firebase Integration in one file for demo)
 // You will later split into files in real project
 
+type Product = {
+  id: string;
+  name: string;
+  price: string;
+  category: string;
+  image: string;
+};
 'use client';
 import { User } from "firebase/auth"
 import { useState, useEffect } from "react";
@@ -34,7 +41,7 @@ const db = getFirestore(app);
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState([]);
   const [adminMode, setAdminMode] = useState(false);
 
@@ -60,7 +67,12 @@ export default function App() {
   // 🛍️ PRODUCTS
   const loadProducts = async () => {
     const snap = await getDocs(collection(db, "products"));
-    setProducts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+setProducts(
+  snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as Omit<Product, "id">),
+  }))
+);
   };
 
   const addProduct = async (p) => {
