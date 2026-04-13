@@ -2,22 +2,7 @@
 // You will later split into files in real project
 'use client';
 
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-};
-type CartItem = {
-  uid: string;
-  id: string;
-  name: string;
-  price: string;
-  category: string;
-  image: string;
-};
-import { User } from "firebase/auth"
+import { User } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
 import {
@@ -49,13 +34,13 @@ const db = getFirestore(app);
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
   const [adminMode, setAdminMode] = useState(false);
 
   // 🔐 AUTH
   useEffect(() => {
-    onAuthStateChanged(auth, (u: User | null) => {
+    onAuthStateChanged(auth, (u) => {
       setUser(u);
       if (u) loadCart(u.uid);
     });
@@ -75,21 +60,16 @@ export default function App() {
   // 🛍️ PRODUCTS
   const loadProducts = async () => {
     const snap = await getDocs(collection(db, "products"));
-setProducts(
-  snap.docs.map((d) => ({
-    id: d.id,
-    ...(d.data() as Omit<Product, "id">),
-  }))
-);
+    setProducts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   };
 
-  const addProduct = async (p: Omit<Product, "id">) => {
+  const addProduct = async (p) => {
     await addDoc(collection(db, "products"), p);
     loadProducts();
   };
 
   // 🛒 CART
-  const addToCart = async (product: Product) => {
+  const addToCart = async (product) => {
     if (!user) return alert("Login first");
     await addDoc(collection(db, "cart"), {
       uid: user.uid,
@@ -98,22 +78,14 @@ setProducts(
     loadCart(user.uid);
   };
 
-  const loadCart = async (uid: string) => {
+  const loadCart = async (uid) => {
     const q = query(collection(db, "cart"), where("uid", "==", uid));
     const snap = await getDocs(q);
-  setCart(
-  snap.docs.map((d) => {
-    const data = d.data() as Omit<CartItem, "id">;
-    return {
-      id: d.id,
-      ...data,
-    };
-  })
-);
+    setCart(snap.docs.map((d) => d.data()));
   };
 
   // 💰 PRICING
-  const total = cart.reduce((s, i) => s + Number(i.price), 0);
+  const total = cart.reduce((s, i) => s + i.price, 0);
   const delivery = total >= 1500 || cart.length >= 3 ? 0 : 100;
   const discount = total * 0.1;
   const finalTotal = total + delivery - discount;
@@ -170,17 +142,14 @@ setProducts(
   );
 }
 
-type AdminPanelProps = {
-  addProduct: (p: Omit<Product, "id">) => Promise<void>;
-};
 // 🧑‍💻 ADMIN COMPONENT
-function AdminPanel({ addProduct }: AdminPanelProps) { 
-const [form, setForm] = useState({ name: "", price: "", image: "", category: "" });
+function AdminPanel({ addProduct }) {
+  const [form, setForm] = useState({ name: "", price: "", image: "" });
 
   const submit = () => {
     if (!form.name || !form.price) return alert("Fill all");
     addProduct({ ...form, price: Number(form.price) });
-    setForm({ name: "", price: "", image: "", category: "" });
+    setForm({ name: "", price: "", image: "" });
   };
 
   return (
@@ -204,30 +173,9 @@ const [form, setForm] = useState({ name: "", price: "", image: "", category: "" 
         onChange={(e) => setForm({ ...form, image: e.target.value })}
         className="border p-1 mr-2"
       />
-      <input
-        placeholder="Category"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: e.target.value })}
-      />
       <button onClick={submit} className="bg-black text-white px-2 py-1">
         Upload
       </button>
     </div>
   );
 }
-
-/*
-SETUP STEPS:
-1. Go to Firebase Console
-2. Create Project
-3. Enable Authentication → Google
-4. Enable Firestore DB
-5. Paste config above
-6. Deploy to Vercel
-
-NOW YOU HAVE:
-- Google Login ✅
-- Secure auth ✅
-- User-based cart ✅
-- Admin upload panel ✅
-*/
