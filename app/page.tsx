@@ -90,7 +90,7 @@ setProducts(
     loadCart(user.uid);
   };
 
-  const loadCart = async (uid) => {
+  const loadCart = async (uid: string) => {
     const q = query(collection(db, "cart"), where("uid", "==", uid));
     const snap = await getDocs(q);
     setCart(snap.docs.map((d) => d.data()));
