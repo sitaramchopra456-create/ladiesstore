@@ -20,6 +20,7 @@ type CartItem = {
 import { User } from "firebase/auth"
 import { useState, useEffect } from "react";
 import { initializeApp } from "firebase/app";
+import { setPersistence, browserLocalPersistence } from "firebase/auth";
 import {
   getAuth,
   GoogleAuthProvider,
